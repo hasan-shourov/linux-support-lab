@@ -1,0 +1,23 @@
+name: lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Check syntax with bash -n
+        run: find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 -n1 bash -n
+
+      - name: Run shellcheck -x
+        run: find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 shellcheck -x
