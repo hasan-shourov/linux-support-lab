@@ -1,0 +1,8 @@
+# Logs and backups
+*.log
+*.bak
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
