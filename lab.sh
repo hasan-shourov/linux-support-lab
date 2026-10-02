@@ -184,7 +184,9 @@ cmd_reset() {
         info "Fixing the active scenario (${active}) first."
         if ! LAB_YES=1 bash "${SCENARIOS_DIR}/${active}/fix.sh"; then
             error "The automatic fix did not finish. Your backups were kept in ${LAB_BACKUP_DIR}."
-            error "Follow the manual fix in scenarios/${active}/README.md, then run reset again."
+            error "Follow the manual fix in scenarios/${active}/README.md."
+            error "When the system is back to normal, clear the lab state with:"
+            error "  sudo rm -rf ${LAB_STATE_DIR} ${LAB_BACKUP_DIR}"
             exit 1
         fi
     fi

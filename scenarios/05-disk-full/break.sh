@@ -33,7 +33,12 @@ if [ "$size_mb" -lt "$MIN_MB" ] && [ ! -e "$BIGFILE" ]; then
     exit 1
 fi
 
-begin_break "$SCENARIO_ID" 0 "This creates a hidden file of ${size_mb} MB in /var/tmp. At least 1 GB always stays free."
+if [ -e "$BIGFILE" ]; then
+    break_message="The hidden file ${BIGFILE} already exists, so nothing more will be created."
+else
+    break_message="This creates a hidden file of ${size_mb} MB in /var/tmp. At least 1 GB always stays free."
+fi
+begin_break "$SCENARIO_ID" 0 "$break_message"
 
 if [ -z "$(note_get free_mb_before)" ]; then
     note_set free_mb_before "$free_mb"
