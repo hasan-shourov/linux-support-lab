@@ -12,7 +12,7 @@ LAB_FIXING=""
 LAB_ARMED=0
 
 # ---------------------------------------------------------------------------
-# Output and colors (colors are off when the stream is not a terminal)
+# Output and colors (colors are off when stdout is not a terminal)
 # ---------------------------------------------------------------------------
 
 _init_colors() {
@@ -23,7 +23,7 @@ _init_colors() {
             C_RESET=$'\033[0m' C_BOLD=$'\033[1m' C_RED=$'\033[31m'
             C_GREEN=$'\033[32m' C_BLUE=$'\033[34m'
         fi
-        if [ -t 2 ]; then
+        if [ -t 1 ] && [ -t 2 ]; then
             E_RESET=$'\033[0m' E_RED=$'\033[31m' E_YELLOW=$'\033[33m'
         fi
     fi
@@ -332,7 +332,7 @@ revert_seconds() {
 
 # cancel_revert <unit>: stop a pending auto-revert (timer or background job).
 cancel_revert() {
-    local unit="$1" pidfile pid
+    local unit="$1" pidfile pid children child
     pidfile="${LAB_STATE_DIR}/${unit}.pid"
     if dry_run; then
         dry "cancel any pending auto-revert (${unit})"
@@ -346,8 +346,12 @@ cancel_revert() {
         pid="$(cat -- "$pidfile")"
         # Never kill ourselves: the background job runs fix.sh with the same PID.
         if [ -n "$pid" ] && [ "$pid" != "$$" ] && kill -0 "$pid" 2>/dev/null; then
-            pkill -P "$pid" 2>/dev/null || true
+            # Stop the parent first, so it cannot move on to the next command, then its children.
+            children="$(pgrep -P "$pid" 2>/dev/null || true)"
             kill "$pid" 2>/dev/null || true
+            for child in $children; do
+                kill "$child" 2>/dev/null || true
+            done
         fi
         rm -f -- "$pidfile"
     fi
@@ -378,13 +382,29 @@ schedule_revert() {
     else
         warn "systemd-run is not available. Using a background job instead."
         # shellcheck disable=SC2016 # $1 and $@ must be expanded by the inner bash, not by this shell
-        nohup env LAB_YES=1 bash -c 'sleep "$1"; shift; exec "$@"' lab-revert "$seconds" "$@" \
+        nohup env LAB_YES=1 bash -c 'sleep "$1" || exit 0; shift; exec "$@"' lab-revert "$seconds" "$@" \
             >/dev/null 2>&1 &
         pid=$!
         printf '%s\n' "$pid" > "${LAB_STATE_DIR}/${unit}.pid"
         ok "Auto-revert scheduled as background job (PID ${pid})"
     fi
     bold "Everything will be put back automatically at ${at} (in ${seconds} seconds)."
+}
+
+# count_recorded_pids <pidfile> <text expected in the command line>
+# Prints how many of the recorded processes are still running and still look right.
+count_recorded_pids() {
+    local pidfile="$1" pattern="$2" pid args count=0
+    if [ -r "$pidfile" ]; then
+        while IFS= read -r pid; do
+            [ -n "$pid" ] || continue
+            args="$(ps -o args= -p "$pid" 2>/dev/null || true)"
+            case "$args" in
+                *"$pattern"*) count=$((count + 1)) ;;
+            esac
+        done < "$pidfile"
+    fi
+    printf '%s' "$count"
 }
 
 # kill_recorded_pids <pidfile> <text expected in the command line>
@@ -484,7 +504,7 @@ _fix_notice() {
     local rc=$?
     if [ "$rc" -ne 0 ] && [ -n "${LAB_FIXING:-}" ]; then
         fail "Scenario ${LAB_FIXING} could not be fixed automatically (exit code ${rc}). Backups were kept."
-        fail "Follow the manual fix in scenarios/${LAB_FIXING}/README.md, then run ./lab.sh reset."
+        fail "Try again with ./lab.sh fix $(scenario_number "$LAB_FIXING"), or follow the manual fix in scenarios/${LAB_FIXING}/README.md."
     fi
 }
 

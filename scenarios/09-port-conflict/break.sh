@@ -27,7 +27,7 @@ if dry_run; then
     dry "python3 -m http.server 80 --bind 0.0.0.0 --directory ${WEB_DIR}   (background, PID saved in ${PID_FILE})"
 else
     mkdir -p "$WEB_DIR"
-    if [ -s "$PID_FILE" ] && kill -0 "$(head -n1 "$PID_FILE")" 2>/dev/null; then
+    if [ "$(count_recorded_pids "$PID_FILE" "http.server 80")" -gt 0 ]; then
         info "The rogue listener is already running (PID $(head -n1 "$PID_FILE"))."
     else
         nohup python3 -m http.server 80 --bind 0.0.0.0 --directory "$WEB_DIR" \
@@ -35,8 +35,9 @@ else
         printf '%s\n' "$!" > "$PID_FILE"
         sleep 1
     fi
-    if [ -z "$(ss -ltnH 'sport = :80' 2>/dev/null || true)" ]; then
-        error "The rogue listener did not start. See ${LOG_FILE}"
+    if [ "$(count_recorded_pids "$PID_FILE" "http.server 80")" -eq 0 ] \
+        || [ -z "$(ss -ltnH 'sport = :80' 2>/dev/null || true)" ]; then
+        error "The rogue listener did not start. Is another program already using port 80? See ${LOG_FILE}"
         exit 1
     fi
     ok "Another program (python3, PID $(head -n1 "$PID_FILE")) is now listening on port 80"

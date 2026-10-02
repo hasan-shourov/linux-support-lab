@@ -12,13 +12,14 @@ WORKER_SECONDS=1800
 
 workers="$(nproc)"
 
-begin_break "$SCENARIO_ID" 0 "This starts ${workers} low-priority CPU workers. They stop by themselves after 30 minutes."
+begin_break "$SCENARIO_ID" 0 "This starts ${workers} low-priority CPU worker(s). They stop by themselves after 30 minutes."
 
 set_active "$SCENARIO_ID"
 arm_failure_notice
 
-if [ -s "$PID_FILE" ] && ! dry_run; then
-    info "Workers are already recorded in ${PID_FILE}, so no new ones are started."
+running="$(count_recorded_pids "$PID_FILE" "timeout ${WORKER_SECONDS} yes")"
+if [ "$running" -gt 0 ] && ! dry_run; then
+    info "${running} worker(s) from an earlier run are still running, so no new ones are started."
 else
     info "Starting ${workers} worker(s): nice -n 10 timeout ${WORKER_SECONDS} yes > /dev/null"
     if dry_run; then
