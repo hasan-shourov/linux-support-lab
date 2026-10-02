@@ -36,6 +36,17 @@ expect_not() {
     fi
 }
 
+# step <description> <command...>: run a lab command, count a failure and carry on.
+step() {
+    local description="$1"
+    shift
+    if "$@" >/dev/null 2>&1; then
+        pass_msg "$description"
+    else
+        fail_msg "$description"
+    fi
+}
+
 http_code() { curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://localhost || true; }
 site_ok() { [ "$(http_code)" = "200" ]; }
 site_forbidden() { [ "$(http_code)" = "403" ]; }
@@ -88,35 +99,35 @@ trap '"$LAB" reset --yes >/dev/null 2>&1 || true' EXIT
 echo
 echo "== Scenario 03: service stopped"
 expect "site works before" site_ok
-"$LAB" break 3 --yes >/dev/null
+step "lab.sh break 3" "$LAB" break 3 --yes
 expect_not "nginx is no longer active" nginx_active
 expect "site is down" site_down
 expect_not "a second scenario is refused while 03 is active" "$LAB" break 10 --yes
-"$LAB" fix 3 >/dev/null
+step "lab.sh fix 3" "$LAB" fix 3
 expect "nginx is active again" nginx_active
 expect "site works again" site_ok
 
 echo
 echo "== Scenario 06: permission denied"
-"$LAB" break 6 --yes >/dev/null
+step "lab.sh break 6" "$LAB" break 6 --yes
 expect "site returns 403" site_forbidden
-"$LAB" fix 6 >/dev/null
+step "lab.sh fix 6" "$LAB" fix 6
 expect "site returns 200 again" site_ok
 
 echo
 echo "== Scenario 09: port conflict"
-"$LAB" break 9 --yes >/dev/null
+step "lab.sh break 9" "$LAB" break 9 --yes
 expect_not "nginx is not running" nginx_active
 expect "another program holds port 80" port80_busy
-"$LAB" fix 9 >/dev/null
+step "lab.sh fix 9" "$LAB" fix 9
 expect "nginx is running again" nginx_active
 expect "site works again" site_ok
 
 echo
 echo "== Scenario 10: bad hosts entry"
-"$LAB" break 10 --yes >/dev/null
+step "lab.sh break 10" "$LAB" break 10 --yes
 expect "example.com resolves to the wrong address" hosts_bad
-"$LAB" fix 10 >/dev/null
+step "lab.sh fix 10" "$LAB" fix 10
 expect_not "example.com no longer resolves to the wrong address" hosts_bad
 
 echo
