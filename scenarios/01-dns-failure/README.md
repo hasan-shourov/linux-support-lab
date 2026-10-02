@@ -30,7 +30,10 @@ Example output:
 PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
 64 bytes from 8.8.8.8: icmp_seq=1 ttl=117 time=12.4 ms
 64 bytes from 8.8.8.8: icmp_seq=2 ttl=117 time=11.9 ms
-...
+
+--- 8.8.8.8 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+
 ping: google.com: Temporary failure in name resolution
 ```
 

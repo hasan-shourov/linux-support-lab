@@ -5,7 +5,7 @@
 
 This is a safe simulation: it makes the `~/.ssh` folder of the user who ran `sudo` writable by everyone (`chmod 777`), so `sshd` refuses key login because of `StrictModes`. With the optional flag `--with-password-disable` it also writes `/etc/ssh/sshd_config.d/00-lab.conf` with `PasswordAuthentication no` (the name starts with `00` because sshd uses the first value it finds). The configuration is validated with `sshd -t` before it is reloaded.
 
-**Keep a second SSH session open while you work.** Existing sessions are not closed by this scenario, and everything is reverted automatically after `LAB_REVERT_SECONDS` (default 600 seconds, 10 minutes).
+**Keep a second SSH session open while you work.** Existing sessions are not closed by this scenario, and everything is reverted automatically after `LAB_REVERT_SECONDS` (default 600 seconds, 10 minutes). For a different delay, run for example `sudo LAB_REVERT_SECONDS=1200 ./lab.sh break 7`.
 
 ## Customer ticket
 
@@ -26,16 +26,15 @@ This is a safe simulation: it makes the `~/.ssh` folder of the user who ran `sud
 ssh -vvv lena@SERVER-IP
 ```
 
-Example output (shortened):
+Example output (shortened, with `--with-password-disable`):
 
 ```text
-debug1: Offering public key: /home/lena/.ssh/id_ed25519 ED25519 SHA256:Zk3...
-debug1: Authentications that can continue: publickey,password
-debug1: Next authentication method: password
+debug1: Offering public key: /home/lena/.ssh/id_ed25519 ED25519 SHA256:Zk3Nq7vQ0pXn1sEwJ4cD8aYfT2uHbLmR9oKiVxGzP5E
+debug1: Authentications that can continue: publickey
 lena@SERVER-IP: Permission denied (publickey).
 ```
 
-The key was offered and not accepted. The client cannot say why. Only the server knows.
+The key was offered and not accepted. The client cannot say why. Only the server knows. Without `--with-password-disable`, the client simply falls back to asking for a password (`Authentications that can continue: publickey,password`), so the visible symptom is "my key stopped working".
 
 **Step 2. Read the server log (use your second session).**
 

@@ -66,9 +66,14 @@ $ ./lab.sh list
 No.  Scenario               Difficulty    Status
 ---  ---------------------- ------------- ------
 01   dns-failure            Beginner      OK
-...
+02   wrong-ip-gateway       Intermediate  OK
 03   service-stopped        Beginner      OK
-...
+04   firewall-blocking      Intermediate  OK
+05   disk-full              Beginner      OK
+06   permission-denied      Beginner      OK
+07   ssh-failure            Intermediate  OK
+08   high-cpu               Beginner      OK
+09   port-conflict          Intermediate  OK
 10   bad-hosts-entry        Beginner      OK
 
 [INFO] No scenario is active. Start one with: ./lab.sh break 3

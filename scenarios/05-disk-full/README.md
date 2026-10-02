@@ -3,7 +3,7 @@
 **Difficulty:** Beginner
 **Estimated time:** 20 minutes
 
-The break creates one hidden file `/var/tmp/.lab-bigfile`. Its size is the smaller of `LAB_DISK_MB` (default 5120) and the free space minus 1 GB, so at least 1 GB always stays free. If the result would be under 100 MB, the break stops. To fill almost the whole disk, set a very large value: `LAB_DISK_MB=1000000 sudo ./lab.sh break 5`.
+The break creates one hidden file `/var/tmp/.lab-bigfile`. Its size is the smaller of `LAB_DISK_MB` (default 5120) and the free space minus 1 GB, so at least 1 GB always stays free. If the result would be under 100 MB, the break stops. To fill almost the whole disk, set a very large value. Put the variable after `sudo`, because `sudo` removes variables that are set before it: `sudo LAB_DISK_MB=1000000 ./lab.sh break 5`.
 
 ## Customer ticket
 

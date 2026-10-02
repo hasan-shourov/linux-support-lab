@@ -94,6 +94,8 @@ The delay is `LAB_REVERT_SECONDS` (default 120 for scenario 02 and 600 for scena
 
 ## Environment variables
 
+With `sudo`, put the variable after `sudo`, for example `sudo LAB_REVERT_SECONDS=300 ./lab.sh break 2`. A variable set before `sudo` is removed by the default `sudo` configuration.
+
 | Variable | Default | Meaning |
 |----------|---------|---------|
 | `LAB_YES` | `0` | Skip the confirmation (set by `--yes`) |

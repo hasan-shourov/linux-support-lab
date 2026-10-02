@@ -42,7 +42,7 @@ top
 ps aux --sort=-%cpu | head -5
 ```
 
-Example output from `top` (header and first rows):
+Example output from `top` (shortened, some columns are left out):
 
 ```text
 %Cpu(s):  0.0 us,  0.3 sy, 99.7 ni,  0.0 id,  0.0 wa

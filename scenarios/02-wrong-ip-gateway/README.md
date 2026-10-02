@@ -3,7 +3,7 @@
 **Difficulty:** Intermediate
 **Estimated time:** 20 minutes
 
-The break changes the routing table at runtime only (no netplan file is touched) and reverts itself after `LAB_REVERT_SECONDS` (default 120 seconds). A reboot also removes it.
+The break changes the routing table at runtime only (no netplan file is touched) and reverts itself after `LAB_REVERT_SECONDS` (default 120 seconds). For more time, run for example `sudo LAB_REVERT_SECONDS=300 ./lab.sh break 2`. A reboot also removes the change.
 
 ## Customer ticket
 

@@ -29,10 +29,12 @@ Example output:
 
 ```text
 *   Trying 192.168.56.101:80...
-* ipv4 connect timeout after 5000ms, move on!
-* Failed to connect to 192.168.56.101 port 80 after 5001 ms: Timeout was reached
-curl: (28) Failed to connect to 192.168.56.101 port 80 after 5001 ms: Timeout was reached
+* Connection timed out after 5001 milliseconds
+* Closing connection
+curl: (28) Connection timed out after 5001 milliseconds
 ```
+
+The exact wording differs between curl versions. The clues that stay the same are the long wait, the words "timed out" (or "Timeout was reached") and exit code 28.
 
 A timeout (waiting, no answer) is different from "Connection refused" (instant). A timeout usually means packets are silently dropped, which is what a firewall does.
 
