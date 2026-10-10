@@ -1,14 +1,3 @@
-# Contributing
-
-Thank you for helping to improve the lab. This project is for learners, so clear and friendly beats clever.
-
-## Ground rules
-
-- Every scenario must be **safe to run in a disposable VM** and must be **reversible**.
-- Every break script backs up what it changes before it changes it.
-- Every fix script restores from that backup, verifies the result and prints PASS or FAIL.
-- Scripts must be idempotent: running them twice must not cause damage.
-- Use plain, friendly English. No emojis in code, minimal in docs.
 
 ## Adding a scenario
 
