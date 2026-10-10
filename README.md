@@ -6,11 +6,8 @@ A hands-on lab where you break an Ubuntu server in 10 ways, diagnose each proble
 [![lint](https://github.com/hasan-shourov/linux-support-lab/actions/workflows/lint.yml/badge.svg)](https://github.com/hasan-shourov/linux-support-lab/actions/workflows/lint.yml)
 [![Platform: Ubuntu](https://img.shields.io/badge/platform-Ubuntu%2022.04%20%7C%2024.04-E95420)](https://ubuntu.com/)
 
-## What you will learn
 
 DNS, networking, systemd, UFW, disk usage, permissions, SSH, processes, ports, the hosts file and ticket writing.
-
-Each scenario trains the same habit: observe, form a hypothesis, test it, fix, verify, and explain the result in plain language to the person who reported it. The scripts only create the problems. The value is in the diagnosis and the write-up.
 
 > **WARNING: Run this lab only in a disposable virtual machine or container.**
 > The scenarios deliberately change DNS settings, routes, firewall rules, file permissions, SSH settings and running services. Never run them on a machine you care about, on a shared server or in production.
